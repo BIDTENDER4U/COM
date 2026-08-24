@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://bidtender4u.vercel.app/sitemap.xml
