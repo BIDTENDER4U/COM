@@ -46,16 +46,13 @@ function App() {
   async function submitEnquiry(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formElement = event.currentTarget;
-    const form = new FormData(event.currentTarget);
     setFormStatus('Sending your enquiry...');
     try {
       const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
       const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
       const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
       if (!serviceId || !templateId || !publicKey) throw new Error('Email service is not configured yet.');
-      await emailjs.send(serviceId, templateId, {
-        name: form.get('name'), company: form.get('company'), phone: form.get('phone'), email: form.get('email'), service: form.get('service'), tender_type: form.get('tenderType'), message: form.get('message'), file_name: (form.get('file') as File)?.name || fileName, to_email: 'tendergem42@gmail.com',
-      }, publicKey);
+      await emailjs.sendForm(serviceId, templateId, formElement, publicKey);
       setFormStatus('Enquiry sent successfully. We will contact you soon.');
       formElement.reset();
       setFileName('');
