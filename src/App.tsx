@@ -1,4 +1,5 @@
 import { ArrowRight, CheckCircle2, ClipboardCheck, FileSearch, Menu, Phone, ShieldCheck, Upload, X } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { FormEvent, MouseEvent, useState } from 'react';
 import markUrl from '../assets/images/logo/bid-tender-mark.png';
 
@@ -48,11 +49,13 @@ function App() {
     const form = new FormData(event.currentTarget);
     setFormStatus('Sending your enquiry...');
     try {
-      const response = await fetch('/api/send-enquiry', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({
-        name: form.get('name'), company: form.get('company'), phone: form.get('phone'), email: form.get('email'), service: form.get('service'), tenderType: form.get('tenderType'), message: form.get('message'), fileName: (form.get('file') as File)?.name || fileName,
-      }) });
-      const result = await response.json();
-      if (!response.ok) throw new Error(result.error || 'Unable to send enquiry.');
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+      if (!serviceId || !templateId || !publicKey) throw new Error('Email service is not configured yet.');
+      await emailjs.send(serviceId, templateId, {
+        name: form.get('name'), company: form.get('company'), phone: form.get('phone'), email: form.get('email'), service: form.get('service'), tender_type: form.get('tenderType'), message: form.get('message'), file_name: (form.get('file') as File)?.name || fileName, to_email: 'tendergem42@gmail.com',
+      }, publicKey);
       setFormStatus('Enquiry sent successfully. We will contact you soon.');
       formElement.reset();
       setFileName('');
