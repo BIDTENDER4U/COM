@@ -7,7 +7,7 @@ import { defineConfig } from 'vite';
 // If you deploy to https://<username>.github.io/<repo-name>/ set base to '/<repo-name>/'
 // If you deploy to https://<username>.github.io/ (a "username.github.io" repo) OR to a custom domain, set base to '/'
 export default defineConfig({
-  base: '/bid-tender-4-u/',
+  base: '/COM/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
