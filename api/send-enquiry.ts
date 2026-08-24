@@ -39,25 +39,32 @@ export default async function handler(request: any, response: any) {
     `Message:\n${body.message}`,
   ].join('\n');
 
-  const mailjetResponse = await fetch('https://api.mailjet.com/v3.1/send', {
-    method: 'POST',
-    headers: {
-      Authorization: `Basic ${Buffer.from(`${MAILJET_API_KEY}:${MAILJET_SECRET_KEY}`).toString('base64')}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      Messages: [{
-        From: { Email: process.env.MAILJET_SENDER_EMAIL || 'tendergem42@gmail.com', Name: 'Bid Tender 4 U Website' },
-        To: [{ Email: process.env.MAILJET_RECEIVER_EMAIL || 'tendergem42@gmail.com', Name: 'Bid Tender 4 U' }],
-        ReplyTo: { Email: body.email, Name: body.name },
-        Subject: `New tender enquiry from ${body.name}`,
-        TextPart: text,
-      }],
-    }),
-  });
+  try {
+    const mailjetResponse = await fetch('https://api.mailjet.com/v3.1/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${MAILJET_API_KEY}:${MAILJET_SECRET_KEY}`).toString('base64')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Messages: [{
+          From: { Email: process.env.MAILJET_SENDER_EMAIL || 'tendergem42@gmail.com', Name: 'Bid Tender 4 U Website' },
+          To: [{ Email: process.env.MAILJET_RECEIVER_EMAIL || 'tendergem42@gmail.com', Name: 'Bid Tender 4 U' }],
+          ReplyTo: { Email: body.email, Name: body.name },
+          Subject: `New tender enquiry from ${body.name}`,
+          TextPart: text,
+        }],
+      }),
+    });
 
-  if (!mailjetResponse.ok) {
-    response.status(502).json({ error: 'Mail service could not send the enquiry.' });
+    if (!mailjetResponse.ok) {
+      const mailjetError = await mailjetResponse.json().catch(() => null);
+      const detail = mailjetError?.ErrorMessage || mailjetError?.ErrorInfo || 'Check your Mailjet API credentials and verified sender.';
+      response.status(502).json({ error: `Mailjet rejected the enquiry: ${detail}` });
+      return;
+    }
+  } catch {
+    response.status(502).json({ error: 'Could not connect to Mailjet. Please try again.' });
     return;
   }
 
