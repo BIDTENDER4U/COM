@@ -1,5 +1,6 @@
-import { ArrowRight, CheckCircle2, ClipboardCheck, FileSearch, Menu, Phone, ShieldCheck, X } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowRight, CheckCircle2, ClipboardCheck, FileSearch, Menu, Phone, ShieldCheck, Upload, X } from 'lucide-react';
+import emailjs from '@emailjs/browser';
+import { FormEvent, MouseEvent, useState } from 'react';
 import markUrl from '../assets/images/logo/bid-tender-mark.png';
 
 const services = [
@@ -10,80 +11,73 @@ const services = [
   ['Bid Preparation Support', 'Build a bid that responds to requirements with a disciplined technical and financial structure.', 'Technical document checklist', 'Compliance statements', 'Product/service specifications', 'BOQ and price schedule review', 'Final bid review'],
   ['Submission & Post-Bid', 'Practical guidance for online submission, acknowledgement verification and next steps.', 'Portal login and DSC guidance', 'Document upload assistance', 'Final submission review', 'Clarification response support', 'General post-bid consultancy'],
 ];
-
-const steps = [
-  { number: '01', title: 'Find the right tender', text: 'We filter opportunities against your business, location and eligibility.' },
-  { number: '02', title: 'Build a compliant bid', text: 'Every document, declaration and commercial detail gets checked.' },
-  { number: '03', title: 'Submit with confidence', text: 'You get a clear submission plan and support right through closing.' },
+const steps = ['Send Your Tender', 'Tender Review', 'Eligibility Check', 'Bid Preparation', 'Submission Support', 'Post-Bid Support'];
+const industries = ['Civil Contractors', 'Road Contractors', 'Construction Companies', 'Electrical Contractors', 'Mechanical Contractors', 'Infrastructure Companies', 'Manufacturers', 'Suppliers', 'IT Companies', 'Service Providers', 'Facility Management Companies', 'Security Service Providers', 'Healthcare Suppliers', 'Medical Equipment Suppliers', 'Educational Suppliers', 'Government Vendors', 'MSMEs', 'Startups', 'Traders', 'Consultants'];
+const faqs = [
+  ['Do you provide GeM tender bidding services?', 'Yes. Bid Tender 4 U provides professional assistance for GeM tender bidding and related documentation and submission processes.'],
+  ['Do you also handle Non-GeM tenders?', 'Yes. We support tenders from government departments, PSUs, state portals and other e-procurement platforms.'],
+  ['Can I send my tender document for review?', 'Yes. Share your tender document through the upload option or WhatsApp and we will identify the next practical step.'],
+  ['Do you prepare tender documents?', 'We assist with organizing and preparing technical, financial, compliance and tender-specific documents.'],
+  ['Do you guarantee tender selection?', 'No. Award decisions are made solely by the tendering authority, so we never promise selection.'],
+  ['Can you help with tender submission?', 'Yes. We provide portal, DSC, document upload and final submission guidance.'],
+  ['Do you provide post-bid support?', 'Yes. We can help with clarification responses, evaluation support and work order follow-up.'],
+];
+const bidStages = [
+  ['Tender Understanding', 'Tender Document Analysis · Eligibility Check · PQ Check · Compliance Review'],
+  ['Bid Preparation', 'Technical Bid · Financial Bid · Documentation · Annexures · Declarations'],
+  ['Bid Submission', 'Portal Support · DSC Guidance · Document Upload · Final Submission'],
+  ['Post-Bid', 'Technical Evaluation Support · Clarification Support · Work Order Follow-up'],
+];
+const reasons = [
+  ['Professional Tender Support', 'Practical assistance throughout the bidding process.'],
+  ['GeM & Non-GeM Expertise', 'Support for multiple government procurement environments.'],
+  ['Documentation Focus', 'Reduce common documentation and compliance mistakes.'],
+  ['Personalized Assistance', 'Support based on the client’s tender and requirements.'],
+  ['End-to-End Support', 'From tender review to submission and post-bid guidance.'],
+  ['Transparent Communication', 'Clear explanation of requirements and responsibilities.'],
 ];
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-
-  return (
-    <div className="site-shell">
-      <header className="navbar">
-        <a className="brand" href="#top" aria-label="Bid Tender 4 U home">
-          <img src={markUrl} alt="Bid Tender 4 U mark" />
-          <span><strong>Bid Tender</strong><small>4 U</small></span>
-        </a>
-        <button className="menu-button" type="button" aria-label="Toggle navigation" onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-        <nav className={menuOpen ? 'nav-links open' : 'nav-links'}>
-          <a href="#services" onClick={() => setMenuOpen(false)}>Services</a>
-          <a href="#process" onClick={() => setMenuOpen(false)}>Our process</a>
-          <a href="#about" onClick={() => setMenuOpen(false)}>Why us</a>
-          <a className="nav-cta" href="#contact" onClick={() => setMenuOpen(false)}>Talk to an expert <ArrowRight size={16} /></a>
-        </nav>
-      </header>
-
-      <main id="top">
-        <section className="hero">
-          <div className="hero-copy">
-            <p className="eyebrow"><span /> Tender intelligence for ambitious businesses</p>
-            <h1>Turn complex tenders into <em>clear opportunities.</em></h1>
-            <p className="hero-text">Independent GeM and Non-GeM tender consultancy for contractors, manufacturers, MSMEs and service providers across India.</p>
-            <div className="hero-actions">
-              <a className="button primary" href="#contact">Review my tender <ArrowRight size={18} /></a>
-              <a className="text-link" href="#process">See how it works <ArrowRight size={16} /></a>
-            </div>
-            <div className="trust-row"><ShieldCheck size={18} /><span>Practical guidance. Careful compliance. No false promises.</span></div>
-          </div>
-          <div className="hero-visual" aria-label="Tender readiness overview">
-            <div className="visual-heading"><span>Bid readiness</span><b>78%</b></div>
-            <div className="readiness-bar"><span /></div>
-            <div className="visual-grid">
-              <div className="mini-stat"><FileSearch size={18} /><span>Eligibility<small>Verified</small></span><CheckCircle2 className="check" size={18} /></div>
-              <div className="mini-stat"><ClipboardCheck size={18} /><span>Documents<small>12 of 14 ready</small></span><b>86%</b></div>
-              <div className="mini-stat"><ShieldCheck size={18} /><span>Compliance<small>In review</small></span><i /></div>
-            </div>
-            <div className="visual-footer"><span className="pulse" /> Tender review in progress <span>Updated today</span></div>
-          </div>
-        </section>
-
-        <section className="metrics" id="about">
-          <div><strong>GeM + Non-GeM</strong><span>tender expertise</span></div>
-          <div><strong>End-to-end</strong><span>bid support</span></div>
-          <div><strong>India-wide</strong><span>consultancy</span></div>
-          <div><strong>One clear</strong><span>point of contact</span></div>
-        </section>
-
-        <section className="section" id="services">
-          <div className="section-intro"><p className="eyebrow"><span /> What we do</p><h2>Less paperwork. More precision.</h2><p>Good bids are won before submission. We help you understand the opportunity, prepare the response and avoid preventable disqualifications.</p></div>
-          <div className="service-list"><article><FileSearch size={24} /><h3>Tender analysis</h3><p>Eligibility, scope, deadlines and risks translated into plain language.</p></article><article><ClipboardCheck size={24} /><h3>Bid preparation</h3><p>A structured response with the right documents in the right order.</p></article><article><ShieldCheck size={24} /><h3>Compliance check</h3><p>A final, detail-focused review before you press submit.</p></article></div>
-        </section>
-
-        <section className="process-section" id="process">
-          <div className="section-intro"><p className="eyebrow"><span /> The clear path</p><h2>A better way to bid.</h2></div>
-          <div className="process-graph">{steps.map((step, index) => <div className="step" key={step.number}><div className="step-number">{step.number}</div><div><h3>{step.title}</h3><p>{step.text}</p></div>{index < steps.length - 1 && <ArrowRight className="step-arrow" size={24} />}</div>)}</div>
-        </section>
-
-        <section className="contact" id="contact"><div><p className="eyebrow"><span /> Start with the tender</p><h2>Have a bid in mind?</h2><p>Share the basics and we’ll help you see the next practical step.</p></div><a className="button dark" href="mailto:Tendergem42@gmail.com?subject=Tender%20review%20request">Request a review <ArrowRight size={18} /></a></section>
-      </main>
-      <footer><div className="brand footer-brand"><img src={markUrl} alt="" /><span><strong>Bid Tender</strong><small>4 U</small></span></div><span>Independent tender consultancy · Ahmedabad, Gujarat · GSTIN: 24BXWPC9423M1ZV</span><a href="tel:+919726407267"><Phone size={15} /> +91 97264 07267</a></footer>
-    </div>
-  );
+  const [openFaq, setOpenFaq] = useState(0);
+  const [fileName, setFileName] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [formStatus, setFormStatus] = useState('');
+  async function submitEnquiry(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    setFormStatus('Sending your enquiry...');
+    try {
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+      if (!serviceId || !templateId || !publicKey) throw new Error('Email service is not configured yet.');
+      await emailjs.sendForm(serviceId, templateId, formElement, publicKey);
+      setFormStatus('Enquiry sent successfully. We will contact you soon.');
+      formElement.reset();
+      setFileName('');
+    } catch (error) {
+      setFormStatus(error instanceof Error ? error.message : 'Unable to send enquiry. Please try WhatsApp.');
+    }
+  }
+  const closeMenu = () => setMenuOpen(false);
+  const handleSiteClick = (event: MouseEvent<HTMLDivElement>) => { const link = (event.target as HTMLElement).closest('a[href="#contact"]'); if (link) { event.preventDefault(); setShowForm(true); setMenuOpen(false); } };
+  return <div className="site-shell" onClick={handleSiteClick}>
+    <header className="navbar"><a className="brand" href="#top" aria-label="Bid Tender 4 U home"><img src={markUrl} alt="Bid Tender 4 U mark" /><span><strong>Bid Tender</strong><small>4 U</small></span></a><button className="menu-button" type="button" aria-label="Toggle navigation" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? <X size={22} /> : <Menu size={22} />}</button><nav className={menuOpen ? 'nav-links open' : 'nav-links'}>{['about', 'services', 'process', 'packages', 'faq', 'contact'].map((item) => <a key={item} href={`#${item}`} onClick={closeMenu}>{item[0].toUpperCase() + item.slice(1)}</a>)}<a className="nav-cta" href="#contact" onClick={closeMenu}>Talk to an expert <ArrowRight size={16} /></a></nav></header>
+    <main id="top">
+      <section className="hero"><div className="hero-copy"><p className="eyebrow"><span /> Tender bidding & consultancy · Ahmedabad</p><h1>Make every bid make <em>sense.</em></h1><p className="hero-text">Bid Tender 4 U helps businesses navigate complicated GeM and Non-GeM tenders with practical support from tender understanding to post-bid guidance.</p><div className="hero-actions"><a className="button primary" href="#contact">Start your tender <ArrowRight size={18} /></a><a className="text-link" href="https://wa.me/919726407267?text=Hello%20Bid%20Tender%204%20U%2C%20I%20need%20assistance%20with%20tender%20bidding." target="_blank" rel="noreferrer">WhatsApp us <ArrowRight size={16} /></a></div><div className="trust-row"><ShieldCheck size={18} /><span>Independent service. No government affiliation. No award guarantee.</span></div></div><div className="hero-visual" aria-label="Tender readiness overview"><div className="visual-heading"><span>Bid readiness</span><b>78%</b></div><div className="readiness-bar"><span /></div><div className="visual-grid"><div className="mini-stat"><FileSearch size={18} /><span>Eligibility<small>Verified</small></span><CheckCircle2 className="check" size={18} /></div><div className="mini-stat"><ClipboardCheck size={18} /><span>Documents<small>12 of 14 ready</small></span><b>86%</b></div><div className="mini-stat"><ShieldCheck size={18} /><span>Compliance<small>In review</small></span><i /></div></div><div className="visual-footer"><span className="pulse" /> Tender review in progress <span>Updated today</span></div></div></section>
+      <section className="metrics"><div><strong>01 <span>GeM</span></strong><span>Government e-Marketplace support</span></div><div><strong>02 <span>Non-GeM</span></strong><span>Departments, PSUs &amp; portals</span></div><div><strong>03 <span>Compliance</span></strong><span>Documents checked with care</span></div><div><strong>04 <span>Practical</span></strong><span>Guidance from review to post-bid</span></div></section>
+      <section className="section" id="about"><div className="section-intro"><p className="eyebrow"><span /> 01 / About the consultancy</p><h2>A clearer path through a complicated tender.</h2><p>Our objective is to simplify tendering by helping clients understand eligibility, prepare documentation, organize technical and financial information and complete online submission procedures.</p></div><div className="principles"><h3>The working principle</h3><p>“You have a tender. We help you understand it, prepare your bid, organize your documents and complete the bidding process.”</p><a className="text-link" href="https://wa.me/919726407267?text=Hello%20Bid%20Tender%204%20U%2C%20I%20want%20to%20speak%20with%20a%20tender%20consultant." target="_blank" rel="noreferrer">Talk to our tender consultant <ArrowRight size={16} /></a></div></section>
+      <section className="section service-section" id="services"><div className="section-intro"><p className="eyebrow"><span /> 02 / Core services</p><h2>The bid support you need, at the point you need it.</h2><p>Choose a focused service or bring the complete tender to us. Every engagement starts with understanding your exact requirements.</p></div><div className="service-list">{services.map(([title, description, ...items]) => <article key={title}><FileSearch size={24} /><h3>{title}</h3><p>{description}</p><ul>{items.map((item) => <li key={item}>{item}</li>)}</ul><a className="text-link" href="#contact">Request service <ArrowRight size={15} /></a></article>)}</div></section>
+      <section className="bid-stages section"><div className="section-intro"><p className="eyebrow"><span /> 03 / Built around the bid</p><h2>From tender understanding to post-bid guidance.</h2></div><div className="stage-grid">{bidStages.map(([title, text], index) => <article key={title}><span className="stage-number">0{index + 1}</span><h3>{title}</h3><p>{text}</p></article>)}</div></section>
+      <section className="process-section" id="process"><div className="section-intro"><p className="eyebrow"><span /> 04 / How it works</p><h2>A bid process with fewer unknowns.</h2><p>A simple six-step path that keeps your tender moving and your responsibilities clear.</p></div><div className="process-graph">{steps.map((step, index) => <div className="step" key={step}><div className="step-number">0{index + 1}</div><h3>{step}</h3><p>{['Upload or share the tender document.', 'Our team reviews the tender requirements.', 'We identify qualification and documentation requirements.', 'We organize and prepare the bid documents.', 'We assist with online submission requirements.', 'We provide guidance after bid submission.'][index]}</p></div>)}</div></section>
+      <section className="section reasons-section" id="why-us"><div className="section-intro"><p className="eyebrow"><span /> 05 / Why choose Bid Tender 4 U</p><h2>Orderly work. Clear communication. No false promises.</h2><p>The work is practical: understand the tender, identify gaps, organize the response and stay clear about what the tendering authority decides.</p></div><div className="reason-grid">{reasons.map(([title, text]) => <article key={title}><ShieldCheck size={21} /><div><h3>{title}</h3><p>{text}</p></div></article>)}</div></section>
+      <section className="section industries-section"><div className="section-intro"><p className="eyebrow"><span /> 06 / Industries we serve</p><h2>For the people who keep India moving.</h2><p>Civil contractors, suppliers, manufacturers, MSMEs and service providers can all start with the tender in front of them. We support businesses in Gujarat, Rajasthan and across every Indian state through practical online tender consultancy.</p></div><div className="industry-tags">{industries.map((industry) => <span key={industry}>{industry}</span>)}</div></section>
+      <section className="section packages-section" id="packages"><div className="section-intro"><p className="eyebrow"><span /> 07 / Support packages</p><h2>Start with the scope that fits your tender.</h2><p>Pricing depends on tender complexity, scope of work, documentation requirements and level of support required.</p></div><div className="package-list">{[['REVIEW-LED', 'Basic Tender Support', 'Tender review and documentation guidance.'], ['PREPARATION-LED', 'Professional Bid Support', 'Complete technical and submission assistance.'], ['END-TO-END', 'Complete Tender Consultancy', 'End-to-end tender bidding support.']].map(([label, title, text]) => <article key={title}><small>{label}</small><h3>{title}</h3><p>{text}</p><a className="button primary" href="#contact">Request quote <ArrowRight size={16} /></a></article>)}</div></section>
+      <section className="upload-band"><div><p className="eyebrow"><span /> Have a tender?</p><h2>Send the document. Start with clarity.</h2><p>Share your tender document and let our team help you understand the requirements and bidding process.</p></div><a className="button dark" href="#contact"><Upload size={17} /> Upload tender</a><a className="button whatsapp" href="https://wa.me/919726407267" target="_blank" rel="noreferrer">WhatsApp us</a></section>
+      <section className="faq-section" id="faq"><div className="section-intro"><p className="eyebrow"><span /> 08 / Questions, answered</p><h2>Trust starts with being clear about the limits.</h2><p>A few things clients ask before they share an important tender.</p></div><div className="faq-list">{faqs.map(([question, answer], index) => <div className="faq-item" key={question}><button type="button" onClick={() => setOpenFaq(openFaq === index ? -1 : index)}><span>{question}</span><span>{openFaq === index ? '−' : '+'}</span></button>{openFaq === index && <p>{answer}</p>}</div>)}</div></section>
+      <section className="contact-form-section" id="contact"><div className="section-intro"><p className="eyebrow"><span /> 09 / Contact</p><h2>Tell us where the tender stands.</h2><p>Share a requirement, ask a question or send your tender document. We will help you identify the next sensible step.</p><div className="contact-details"><a href="tel:+919726407267"><Phone size={16} /> +91 9726407267</a><a href="mailto:Tendergem42@gmail.com">Tendergem42@gmail.com</a><span>Murlidhar 3, Isanpur, Ahmedabad</span></div></div><form onSubmit={submitEnquiry}><h3>Request a consultation</h3><label>Full name *<input required name="name" placeholder="Your name" /></label><label>Company name<input name="company" placeholder="Company name" /></label><label>Mobile number *<input required name="phone" type="tel" placeholder="Your mobile number" /></label><label>Email *<input required name="email" type="email" placeholder="you@example.com" /></label><label>Service required<select name="service">{services.map(([title]) => <option key={title}>{title}</option>)}</select></label><label>Tender type<select name="tenderType"><option>GeM</option><option>Non-GeM</option><option>Not sure yet</option></select></label><label className="wide">Message *<textarea required name="message" placeholder="Tell us briefly about your tender" rows={4} /></label><label className="file-field wide"><span><Upload size={16} /> {fileName || 'Attach tender document'}</span><input type="file" name="file" accept=".pdf,.doc,.docx,.xls,.xlsx" onChange={(event) => setFileName(event.target.files?.[0]?.name || '')} /></label><p className="form-note">Your documents and information are treated as private. Clients remain responsible for the accuracy and validity of information submitted in their bids.</p><p className="form-status" aria-live="polite">{formStatus}</p><button className="button primary wide" type="submit">Submit enquiry <ArrowRight size={17} /></button></form></section>
+    </main>{showForm && <div className="form-modal" role="dialog" aria-modal="true" aria-labelledby="form-title"><div className="form-modal-content"><button className="modal-close" type="button" aria-label="Close enquiry form" onClick={() => setShowForm(false)}><X size={20} /></button><form onSubmit={submitEnquiry}><h3 id="form-title">Request a consultation</h3><label>Full name *<input required name="name" placeholder="Your name" /></label><label>Company name<input name="company" placeholder="Company name" /></label><label>Mobile number *<input required name="phone" type="tel" placeholder="Your mobile number" /></label><label>Email *<input required name="email" type="email" placeholder="you@example.com" /></label><label>Service required<select name="service">{services.map(([title]) => <option key={title}>{title}</option>)}</select></label><label>Tender type<select name="tenderType"><option>GeM</option><option>Non-GeM</option><option>Not sure yet</option></select></label><label className="wide">Message *<textarea required name="message" placeholder="Tell us briefly about your tender" rows={4} /></label><label className="file-field wide"><span><Upload size={16} /> {fileName || 'Attach tender document'}</span><input type="file" name="file" accept=".pdf,.doc,.docx,.xls,.xlsx" onChange={(event) => setFileName(event.target.files?.[0]?.name || '')} /></label><p className="form-status" aria-live="polite">{formStatus}</p><button className="button primary wide" type="submit">Submit enquiry <ArrowRight size={17} /></button></form></div></div>}<footer><div className="brand footer-brand"><img src={markUrl} alt="" /><span><strong>Bid Tender</strong><small>4 U</small></span></div><span>Independent tender consultancy · Ahmedabad, Gujarat · GSTIN: 24BXWPC9423M1ZV</span><a href="tel:+919726407267"><Phone size={15} /> +91 97264 07267</a></footer>
+  </div>;
 }
-
 export default App;
