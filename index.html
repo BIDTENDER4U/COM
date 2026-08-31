@@ -62,5 +62,92 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- End Google Tag Manager (noscript) -->
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+<script>
+/* Bid Tender 4 U — email-enquiry sender (v8, Apps Script + document attach) */
+(function () {
+  var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxY_SoCpfIXTd_G6lK4MyJlyB8bTjYeqEO0cseLOnun0Z-voT-NhthJbjb5WbfrLZaH/exec';
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('script.google.com') === -1) {
+    return;
+  }
+
+  function getForm(t) { return t && t.closest ? t.closest('form[data-testid$="-form"]') : null; }
+
+  function toast(msg, ok) {
+    var t = document.createElement('div');
+    t.setAttribute('data-bt4u-toast', '');
+    t.style.cssText = 'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:99999;background:' + (ok ? '#15803d' : '#b42318') + ';color:#fff;padding:12px 18px;border-radius:10px;font-size:14px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:90%;text-align:center';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(function () { t.remove(); }, 6000);
+  }
+
+  // Read the attached tender document as base64 so the Apps Script can
+  // decode it and attach it to the email.
+  function readFileBase64(file) {
+    return new Promise(function (resolve, reject) {
+      var reader = new FileReader();
+      reader.onload = function () { resolve(String(reader.result).split(',')[1] || ''); };
+      reader.onerror = function () { reject(reader.error); };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // CAPTURE phase — React's own submit still runs (original card), email sent in parallel.
+  document.addEventListener('submit', function (ev) {
+    var form = getForm(ev.target);
+    if (!form) return;
+    if (!form.checkValidity()) return;
+
+    var fd = new FormData(form);
+    if ((fd.get('website') || '') !== '') return; // honeypot
+
+    var type = (form.getAttribute('data-testid') || '').replace('-form', '');
+    var file = fd.get('file');
+    var statusEl = form.querySelector('.form-status');
+    if (statusEl) statusEl.textContent = 'Sending your enquiry...';
+
+    (file && file.size ? readFileBase64(file) : Promise.resolve('')).then(function (fileData) {
+      var data = {
+        form_type: type === 'tender' ? 'tender' : 'enquiry',
+        name: (fd.get('name') || '').trim(),
+        company: (fd.get('company') || '').trim(),
+        phone: (fd.get('phone') || '').trim(),
+        email: (fd.get('email') || '').trim(),
+        city: (fd.get('city') || '').trim(),
+        business_type: (fd.get('businessType') || '').trim(),
+        tender_type: (fd.get('tenderType') || '').trim(),
+        portal: (fd.get('portal') || '').trim(),
+        reference_number: (fd.get('referenceNumber') || '').trim(),
+        service: (fd.get('service') || '').trim(),
+        closing_date: (fd.get('closingDate') || '').trim(),
+        message: (fd.get('message') || '').trim(),
+        file_name: file ? file.name : '',
+        file_data: fileData
+      };
+
+      fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data).toString()
+      }).then(function (res) {
+        return res.json().catch(function () { return {}; });
+      }).then(function (result) {
+        if (result && result.success === false) {
+          console.error('[BidTender4u] backend error:', result.error || '');
+          if (statusEl) statusEl.textContent = 'Unable to send enquiry. Please try WhatsApp.';
+          toast('Sorry, we could not send your enquiry. Please WhatsApp us at +91 9726407267.');
+        } else {
+          if (statusEl) statusEl.textContent = 'Enquiry sent successfully. We will contact you soon.';
+          toast('Enquiry sent successfully. We will contact you soon.', true);
+        }
+      }).catch(function (err) {
+        console.error('[BidTender4u] send FAILED:', err);
+        if (statusEl) statusEl.textContent = 'Unable to send enquiry. Please try WhatsApp.';
+        toast('Sorry, we could not send your enquiry. Please WhatsApp us at +91 9726407267.');
+      });
+    });
+  }, true);
+})();
+</script>
   </body>
 </html>
