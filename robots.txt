@@ -1,3 +1,5 @@
 User-agent: *
 Allow: /
-Sitemap: https://bidtender4u.vercel.app/sitemap.xml
+Sitemap: https://www.bidtender4u.com/sitemap.xml
+
+# SEO: allow crawling of the public site
